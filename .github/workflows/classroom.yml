@@ -11,26 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
     steps:
-    - name: Checkout student code
+    - name: Checkout code
       uses: actions/checkout@v4
-    
-    - name: Checkout private tests
-      uses: actions/checkout@v4
+    - name: test
+      id: test
+      uses: classroom-resources/autograding-python-grader@v1
       with:
-        repository: Bad-4-Robots/add-two-tests
-        token: ${{ secrets.TEST_REPO_PAT }}
-        path: .github/classroom-tests
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-        
-    - name: Run Tests
-      run: python .github/classroom-tests/run_tests.py
-      
-    - name: Report Results
-      if: always()
+        timeout: 10
+        setup-command: ''
+    - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TEST_RESULTS: "${{steps.test.outputs.result}}"
       with:
-        runners: python-test
+        runners: test
